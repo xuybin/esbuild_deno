@@ -31,11 +31,14 @@ async function loadFromCLI(
 ): Promise<esbuild.OnLoadResult> {
   const specifierRaw = specifier.href;
   if (!infoCache.has(specifierRaw)) {
-    const { modules } = await deno.info(specifier, {
+    const { modules,redirects } = await deno.info(specifier, {
       importMap: options.importMapFile,
     });
     for (const module of modules) {
       infoCache.set(module.specifier, module);
+    }
+    if(redirects && redirects[specifierRaw]){
+      infoCache.set(specifierRaw,infoCache.get(redirects[specifierRaw])!);
     }
   }
   const module = infoCache.get(specifierRaw);
