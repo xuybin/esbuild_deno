@@ -13,7 +13,7 @@ export type MediaType =
 export interface InfoOutput {
   root: string;
   modules: ModuleEntry[];
-  redirects?:Record<string, string>
+  redirects?: Record<string, string>;
 }
 
 export interface ModuleEntry {

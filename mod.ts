@@ -26,6 +26,7 @@ export interface DenoPluginOptions {
    *                 Requires --allow-net.
    */
   loader?: "native" | "portable";
+  importCDN?: Map<string, string>;
 }
 
 /** The default loader to use. */
@@ -53,6 +54,12 @@ export function denoPlugin(options: DenoPluginOptions = {}): esbuild.Plugin {
       build.onResolve({ filter: /.*/ }, function onResolve(
         args: esbuild.OnResolveArgs,
       ): esbuild.OnResolveResult | null | undefined {
+        if (options.importCDN?.get(args.path)) {
+          return {
+            path: options.importCDN.get(args.path),
+            namespace: "globalExternal",
+          };
+        }
         const resolveDir = args.resolveDir
           ? `${toFileUrl(args.resolveDir).href}/`
           : "";
@@ -68,7 +75,7 @@ export function denoPlugin(options: DenoPluginOptions = {}): esbuild.Plugin {
         } else {
           try {
             resolved = new URL(args.path, referrer);
-          } catch (error) {
+          } catch (_error) {
             resolved = new URL(args.path, resolveDir);
           }
         }
@@ -78,6 +85,12 @@ export function denoPlugin(options: DenoPluginOptions = {}): esbuild.Plugin {
       build.onLoad({ filter: /.*/ }, function onLoad(
         args: esbuild.OnLoadArgs,
       ): Promise<esbuild.OnLoadResult | null> {
+        if (args.namespace == "globalExternal") {
+          return Promise.resolve({
+            contents: `module.exports = globalThis.${args.path}`,
+            loader: "js",
+          });
+        }
         const url = new URL(args.path);
         switch (loader) {
           case "native":
