@@ -26,7 +26,7 @@ export interface DenoPluginOptions {
    *                 Requires --allow-net.
    */
   loader?: "native" | "portable";
-  importCDN?: Map<string, string>;
+  importCDN?: Record<string, string>;
 }
 
 /** The default loader to use. */
@@ -54,9 +54,9 @@ export function denoPlugin(options: DenoPluginOptions = {}): esbuild.Plugin {
       build.onResolve({ filter: /.*/ }, function onResolve(
         args: esbuild.OnResolveArgs,
       ): esbuild.OnResolveResult | null | undefined {
-        if (options.importCDN?.get(args.path)) {
+        if (options.importCDN?.[args.path]) {
           return {
-            path: options.importCDN.get(args.path),
+            path: options.importCDN?.[args.path],
             namespace: "globalExternal",
           };
         }
