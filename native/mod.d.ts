@@ -1,3 +1,4 @@
+// https://deno.land/x/esbuild@v0.14.42/mod.d.ts
 export type Platform = "browser" | "node" | "neutral";
 export type Format = "iife" | "cjs" | "esm";
 export type Loader =
@@ -13,13 +14,7 @@ export type Loader =
   | "dataurl"
   | "binary"
   | "default";
-export type LogLevel =
-  | "verbose"
-  | "debug"
-  | "info"
-  | "warning"
-  | "error"
-  | "silent";
+export type LogLevel = "verbose" | "debug" | "info" | "warning" | "error" | "silent";
 export type Charset = "ascii" | "utf8";
 export type Drop = "console" | "debugger";
 
@@ -85,6 +80,8 @@ interface CommonOptions {
   logLevel?: LogLevel;
   /** Documentation: https://esbuild.github.io/api/#log-limit */
   logLimit?: number;
+  /** Documentation: https://esbuild.github.io/api/#log-override */
+  logOverride?: Record<string, LogLevel>;
 }
 
 export interface BuildOptions extends CommonOptions {
@@ -295,32 +292,17 @@ export interface PluginBuild {
   initialOptions: BuildOptions;
   resolve(path: string, options?: ResolveOptions): Promise<ResolveResult>;
 
-  onStart(
-    callback: () =>
-      (OnStartResult | null | void | Promise<OnStartResult | null | void>),
-  ): void;
+  onStart(callback: () => (OnStartResult | null | void | Promise<OnStartResult | null | void>)): void;
   onEnd(callback: (result: BuildResult) => (void | Promise<void>)): void;
   onResolve(
     options: OnResolveOptions,
     callback: (
       args: OnResolveArgs,
-    ) => (
-      | OnResolveResult
-      | null
-      | undefined
-      | Promise<OnResolveResult | null | undefined>
-    ),
+    ) => (OnResolveResult | null | undefined | Promise<OnResolveResult | null | undefined>),
   ): void;
   onLoad(
     options: OnLoadOptions,
-    callback: (
-      args: OnLoadArgs,
-    ) => (
-      | OnLoadResult
-      | null
-      | undefined
-      | Promise<OnLoadResult | null | undefined>
-    ),
+    callback: (args: OnLoadArgs) => (OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>),
   ): void;
 
   // This is a full copy of the esbuild library in case you need it
@@ -502,9 +484,7 @@ export declare function build(
 export declare function build(
   options: BuildOptions & { incremental: true; metafile: true },
 ): Promise<BuildIncremental & { metafile: Metafile }>;
-export declare function build(
-  options: BuildOptions & { incremental: true },
-): Promise<BuildIncremental>;
+export declare function build(options: BuildOptions & { incremental: true }): Promise<BuildIncremental>;
 export declare function build(
   options: BuildOptions & { metafile: true },
 ): Promise<BuildResult & { metafile: Metafile }>;
@@ -519,10 +499,7 @@ export declare function build(options: BuildOptions): Promise<BuildResult>;
  *
  * Documentation: https://esbuild.github.io/api/#serve
  */
-export declare function serve(
-  serveOptions: ServeOptions,
-  buildOptions: BuildOptions,
-): Promise<ServeResult>;
+export declare function serve(serveOptions: ServeOptions, buildOptions: BuildOptions): Promise<ServeResult>;
 
 /**
  * This function transforms a single JavaScript file. It can be used to minify
@@ -535,10 +512,7 @@ export declare function serve(
  *
  * Documentation: https://esbuild.github.io/api/#transform-api
  */
-export declare function transform(
-  input: string,
-  options?: TransformOptions,
-): Promise<TransformResult>;
+export declare function transform(input: string, options?: TransformOptions): Promise<TransformResult>;
 
 /**
  * Converts log messages to formatted message strings suitable for printing in
@@ -548,10 +522,7 @@ export declare function transform(
  * - Works in node: yes
  * - Works in browser: yes
  */
-export declare function formatMessages(
-  messages: PartialMessage[],
-  options: FormatMessagesOptions,
-): Promise<string[]>;
+export declare function formatMessages(messages: PartialMessage[], options: FormatMessagesOptions): Promise<string[]>;
 
 /**
  * Pretty-prints an analysis of the metafile JSON to a string. This is just for
@@ -563,10 +534,7 @@ export declare function formatMessages(
  *
  * Documentation: https://esbuild.github.io/api/#analyze
  */
-export declare function analyzeMetafile(
-  metafile: Metafile | string,
-  options?: AnalyzeMetafileOptions,
-): Promise<string>;
+export declare function analyzeMetafile(metafile: Metafile | string, options?: AnalyzeMetafileOptions): Promise<string>;
 
 /**
  * A synchronous version of "build".
@@ -589,10 +557,7 @@ export declare function buildSync(options: BuildOptions): BuildResult;
  *
  * Documentation: https://esbuild.github.io/api/#transform-api
  */
-export declare function transformSync(
-  input: string,
-  options?: TransformOptions,
-): TransformResult;
+export declare function transformSync(input: string, options?: TransformOptions): TransformResult;
 
 /**
  * A synchronous version of "formatMessages".
@@ -600,10 +565,7 @@ export declare function transformSync(
  * - Works in node: yes
  * - Works in browser: no
  */
-export declare function formatMessagesSync(
-  messages: PartialMessage[],
-  options: FormatMessagesOptions,
-): string[];
+export declare function formatMessagesSync(messages: PartialMessage[], options: FormatMessagesOptions): string[];
 
 /**
  * A synchronous version of "analyzeMetafile".
@@ -613,10 +575,7 @@ export declare function formatMessagesSync(
  *
  * Documentation: https://esbuild.github.io/api/#analyze
  */
-export declare function analyzeMetafileSync(
-  metafile: Metafile | string,
-  options?: AnalyzeMetafileOptions,
-): string;
+export declare function analyzeMetafileSync(metafile: Metafile | string, options?: AnalyzeMetafileOptions): string;
 
 /**
  * This configures the browser-based version of esbuild. It is necessary to
