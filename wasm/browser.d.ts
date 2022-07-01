@@ -1,6 +1,7 @@
+// https://registry.npmmirror.com/esbuild-wasm/-/esbuild-wasm-0.14.47.tgz/esm
 export type Platform = 'browser' | 'node' | 'neutral';
 export type Format = 'iife' | 'cjs' | 'esm';
-export type Loader = 'js' | 'jsx' | 'ts' | 'tsx' | 'css' | 'json' | 'text' | 'base64' | 'file' | 'dataurl' | 'binary' | 'default';
+export type Loader = 'js' | 'jsx' | 'ts' | 'tsx' | 'css' | 'json' | 'text' | 'base64' | 'file' | 'dataurl' | 'binary' | 'copy' | 'default';
 export type LogLevel = 'verbose' | 'debug' | 'info' | 'warning' | 'error' | 'silent';
 export type Charset = 'ascii' | 'utf8';
 export type Drop = 'console' | 'debugger';
@@ -21,6 +22,8 @@ interface CommonOptions {
   globalName?: string;
   /** Documentation: https://esbuild.github.io/api/#target */
   target?: string | string[];
+  /** Documentation: https://esbuild.github.io/api/#supported */
+  supported?: Record<string, boolean>;
 
   /** Documentation: https://esbuild.github.io/api/#mangle-props */
   mangleProps?: RegExp;
@@ -148,6 +151,7 @@ export interface StdinOptions {
 }
 
 export interface Message {
+  id: string;
   pluginName: string;
   text: string;
   location: Location | null;
@@ -402,6 +406,7 @@ export interface OnLoadResult {
 }
 
 export interface PartialMessage {
+  id?: string;
   pluginName?: string;
   text?: string;
   location?: Partial<Location> | null;
